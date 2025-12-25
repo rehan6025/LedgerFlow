@@ -1,3 +1,41 @@
+# API Gateway deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: api-gateway:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+---
+# API Gateway Service (The entry point)
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  type: NodePort # This allows Minikube to give you a URL
+  selector:
+    app: api-gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+
 # User Service Deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -18,7 +56,7 @@ spec:
           image: user-service:v1
           imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
 ---
 # User Service K8s Service (This is your "Discovery" name)
 apiVersion: v1
@@ -30,5 +68,6 @@ spec:
     app: user-service
   ports:
     - protocol: TCP
-      port: 80 # The gateway will call http://user-service:80
-      targetPort: 8080
+      port: 8081 # The gateway will call http://user-service:80
+      targetPort: 8081
+
