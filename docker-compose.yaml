@@ -1,0 +1,24 @@
+
+services:
+
+  user-service:
+    image: user-service:latest
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    networks:
+      - ledgerflow-net
+
+  api-gateway:
+    image: api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+    networks:
+      - ledgerflow-net
+
+networks:
+  ledgerflow-net:
+    driver: bridge
